@@ -1,0 +1,61 @@
+# CI: runs on every push and pull request. A red run blocks the merge.
+# Phase 0 jobs: lint (via pre-commit) and a full-history secret scan.
+# Later phases add: Kusto emulator tests, dependency audit, IaC scan.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: the workflow token can only read the repo.
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the older, still-running run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint (pre-commit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dev tools (pinned)
+        run: python -m pip install -r requirements-dev.txt
+
+      # gitleaks is skipped here because the pre-commit hook only scans *staged*
+      # changes, and CI has none. The secret-scan job below scans the full history.
+      - name: Run all pre-commit checks
+        env:
+          SKIP: gitleaks
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  secret-scan:
+    name: secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0  # every commit, so a secret added then deleted is still found
+          persist-credentials: false
+
+      # Official gitleaks image, pinned by digest (v8.30.1). --redact keeps any
+      # finding's secret value out of the CI log.
+      - name: Scan git history
+        run: >
+          docker run --rm -v "${{ github.workspace }}:/repo"
+          ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          git /repo --redact --verbose --exit-code 1

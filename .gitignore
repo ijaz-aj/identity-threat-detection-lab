@@ -1,0 +1,102 @@
+# .gitignore — identity-threat-detection-lab
+#
+# .gitignore stops Git from *adding* matching files that are not tracked yet.
+# It is NOT a security control on its own: `git add -f` bypasses it, and a file
+# that is already committed stays tracked. gitleaks (pre-commit + CI) is the
+# second layer that catches secrets this file misses.
+#
+# Rule syntax used below:
+#   name      matches a file or folder with that name anywhere in the repo
+#   name/     matches folders only
+#   *  **     wildcard inside one folder / across any number of folders
+#   !pattern  re-includes something an earlier rule excluded (order matters)
+#   #         starts a comment ONLY at the start of a line. A comment after a
+#             pattern becomes part of the pattern and silently breaks it.
+
+# ---------------------------------------------------------------------------
+# 1. Secrets and credentials — never committed, never pasted into chat
+# ---------------------------------------------------------------------------
+# Real keys and tokens for local runs, plus variants such as .env.local
+.env
+.env.*
+# Placeholders only; this one IS committed (must come after the rules above)
+!.env.example
+# Private keys and certificate bundles
+*.pem
+*.key
+*.pfx
+*.p12
+# Azure publish profiles embed credentials
+*.publishsettings
+# Copied AWS / Azure CLI credential and token-cache folders
+.aws/
+.azure/
+# A leak report quotes the secret it found
+gitleaks-report.json
+
+# ---------------------------------------------------------------------------
+# 2. Raw evidence that may hold private data — only redacted copies are committed
+# ---------------------------------------------------------------------------
+# Unredacted screenshots (tenant ID, home IP, email visible)
+docs/screenshots/raw/
+# Raw query exports from the live tenant / AWS account
+lab/evidence-raw/
+# Velociraptor collections and offline-collector output: real usernames, paths, hashes
+dfir/velociraptor/collections/
+Collection-*.zip
+# Velociraptor server config contains the CA private key; client config is lab-specific
+server.config.yaml
+client.config.yaml
+# Downloaded binaries (Velociraptor, Sysmon, Stratus): fetch and hash-verify, never commit
+*.exe
+*.msi
+
+# ---------------------------------------------------------------------------
+# 3. Infrastructure-as-Code tool state — can contain secrets and resource IDs
+# ---------------------------------------------------------------------------
+# Terraform plugins (large, re-downloadable), state and plans
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# ---------------------------------------------------------------------------
+# 4. Python leftovers — regenerated on every run
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+# Virtual environments: rebuilt from the lockfile
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# 5. Large or local-only runtime data
+# ---------------------------------------------------------------------------
+# Raw public-dataset archives (we commit a small extracted sample + provenance)
+data/datasets/_downloads/
+# Kusto emulator persisted data, if we mount a folder
+kustodata/
+# Local LLM model files (several GB)
+ollama-data/
+# Scratch eval outputs; final scorecards go to docs/results/
+evals/runs/
+*.log
+
+# ---------------------------------------------------------------------------
+# 6. Editor, OS and tool-local settings
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

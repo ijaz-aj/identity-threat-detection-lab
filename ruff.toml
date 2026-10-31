@@ -1,0 +1,12 @@
+# ruff settings (Python lint + format).
+line-length = 100
+target-version = "py312"
+
+[lint]
+# E/F/W: pyflakes + pycodestyle basics, I: import order, B: likely bugs,
+# S: bandit security rules (SAST), UP: modern syntax.
+select = ["E", "F", "W", "I", "B", "S", "UP"]
+
+[lint.per-file-ignores]
+# pytest uses bare `assert` on purpose.
+"tests/**" = ["S101"]

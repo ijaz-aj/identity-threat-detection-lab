@@ -1,0 +1,19 @@
+# yamllint settings for this repo.
+extends: default
+
+ignore: |
+  .venv/
+
+rules:
+  # Sentinel rule queries are long; warn instead of failing.
+  line-length:
+    max: 140
+    level: warning
+  # Sentinel templates and GitHub workflows don't start with "---".
+  document-start: disable
+  # GitHub Actions uses the key `on:`; allow it without quotes.
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 2
