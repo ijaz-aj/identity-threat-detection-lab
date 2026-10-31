@@ -23,8 +23,12 @@
   full-history `secret-scan`); Dependabot.
 - Verified locally: all pre-commit checks pass; the CI gitleaks command scans history with no leaks.
 
+**Published**
+- Public repo: https://github.com/ijaz-aj/identity-threat-detection-lab (description + 12 topics).
+- First CI run green on `0dcf757`: `lint` and `secret-scan` passed; log shows "1 commits scanned …
+  no leaks found". Run: https://github.com/ijaz-aj/identity-threat-detection-lab/actions/runs/41228769904
+
 **Open**
-- [ ] Publish repo and confirm the first CI run is green (log must show commits actually scanned).
 - [ ] Control validation: prove gitleaks blocks a fake token at commit time.
 - [ ] Verify `.env` ignore rules with `git check-ignore -v .env .env.local .env.example`.
 - [ ] Branch protection on `main` with required checks `lint` + `secret-scan`.
