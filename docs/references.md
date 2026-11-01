@@ -16,6 +16,21 @@ Anything that could not be verified is marked **UNVERIFIED**.
 | ruff-pre-commit v0.17.1 hook ids `ruff-check`, `ruff-format` | [ruff-pre-commit `.pre-commit-hooks.yaml`](https://github.com/astral-sh/ruff-pre-commit/blob/v0.17.1/.pre-commit-hooks.yaml) | 2026-10-31 |
 | `.gitignore`: `#` starts a comment only at the beginning of a line; `!` negates; last matching pattern wins | [git-scm: gitignore](https://git-scm.com/docs/gitignore) | 2026-10-31 (also proven locally with `git check-ignore`) |
 
+## Log schemas and event names (Phase 1)
+| Fact | Source | Checked |
+|---|---|---|
+| `SigninLogs` columns used here: `TimeGenerated`, `UserPrincipalName`, `IPAddress`, `Location`, `LocationDetails` (dynamic), `AutonomousSystemNumber`, `ResultType` ("0 indicates success; other values are failures"), `ResultDescription`, `AppDisplayName`, `ClientAppUsed`, `UserAgent`, `DeviceDetail` (dynamic), `IsInteractive` (bool), `AuthenticationDetails`, `AuthenticationRequirement`, `ConditionalAccessStatus`, `RiskLevelDuringSignIn` (P2 only, else `hidden`), `SessionId`, `UniqueTokenIdentifier`, `CorrelationId`. `MfaDetail` is **deprecated**. Ingestion API support: **No** (synthetic data needs a custom table). | [Azure Monitor table reference: SigninLogs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/signinlogs) | 2026-11-01 |
+| `AuditLogs` columns: `TimeGenerated`, `OperationName`, `ActivityDisplayName`, `Category`, `Result`, `ResultReason`, `InitiatedBy` (dynamic), `TargetResources` (dynamic), `AdditionalDetails` (dynamic), `LoggedByService`, `CorrelationId`, `Identity`. Ingestion API support: **No**. | [Azure Monitor table reference: AuditLogs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/auditlogs) | 2026-11-01 |
+| Sign-in error codes: 50126 InvalidUserNameOrPassword; 50053 account locked (IdsLocked) or sign-in from malicious IP blocked; 50057 UserDisabled; 50055 password expired; 50074 user did not pass the MFA challenge; 50076 MFA required; 53003 BlockedByConditionalAccess; 50140 KmsiInterrupt (normal "Keep me signed in" step) | [Microsoft Entra error codes](https://learn.microsoft.com/en-us/entra/identity-platform/reference-error-codes) | 2026-11-01 |
+| 500121 "Authentication failed during strong authentication request." (not on the Learn page; from Microsoft's error lookup) | [login.microsoftonline.com/error?code=500121](https://login.microsoftonline.com/error?code=500121) | 2026-11-01 |
+| Audit activities (category): `Consent to application`, `Add delegated permission grant`, `Add app role assignment to service principal`, `Add service principal credentials`, `Update application - Certificates and secrets management` (ApplicationManagement); `Add member to role`, `Add eligible member to role` (RoleManagement); `Add user`, `Reset password`, `Disable account` (UserManagement) | [Microsoft Entra audit log activity reference](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/reference-audit-activities) | 2026-11-01 |
+
+## Incident response facts
+| Fact | Source | Checked |
+|---|---|---|
+| AWS applies the managed policy `AWSCompromisedKeyQuarantineV3` (earlier V2/V1) to an IAM user whose credentials are exposed publicly; it denies risky actions to limit fraud while leaving existing resources running | [AWS Managed Policy reference: AWSCompromisedKeyQuarantineV3](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSCompromisedKeyQuarantineV3.html) | 2026-11-01 |
+| Exposed-key remediation order: deactivate the key, revoke active sessions, review CloudTrail, delete resources you didn't create, create a new key, delete the old key; keep the quarantine policy until all steps are done | [AWS re:Post Knowledge Center: Resolve unauthorized activity](https://repost.aws/knowledge-center/potential-account-compromise), [AWS re:Post: Responding to an exposed AWS access key](https://repost.aws/articles/ARTdf-AQfbTy--wzQmf2JOOg/managing-exposed-aws-access-keys-part-3-recovery-responding-to-an-exposed-aws-access-key) | 2026-11-01 |
+
 ## Known issues hit in this lab
 | Issue | Source | Checked |
 |---|---|---|

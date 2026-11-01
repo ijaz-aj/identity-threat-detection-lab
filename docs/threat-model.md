@@ -33,6 +33,7 @@ Last updated: Phase 0 (2026-10-31).
 | A1 | Secret committed by mistake | `.gitignore` (tested with `git check-ignore`); gitleaks pre-commit hook on staged changes; gitleaks full-history scan in CI; `detect-private-key` hook | In place; proven: a fake GitHub token was blocked at commit time (`github-pat`, secret redacted) and CI scans the full history |
 | A2 | Malicious or hijacked upstream Action / hook / image | Actions and hooks pinned by full commit SHA, gitleaks image by digest, pip packages by exact version; ~14-day cooldown before adopting releases; Dependabot proposes updates through CI | In place (config); hash-pinned pip lockfile is a gap |
 | A3 | Pull request from a fork tries to steal secrets via CI | Workflow token is `contents: read`; `persist-credentials: false`; no repository secrets exist; no `pull_request_target` trigger | In place (config) |
+| A5 | Untested or broken change lands on `main` (or history is rewritten) | Ruleset `protect-main`: PR required, both CI checks required, force pushes and deletion blocked, no bypass | In place; proven: a direct push to `main` was rejected (GH013) |
 | A4 | Unredacted evidence or personal data published | Raw evidence folders git-ignored; commits use a GitHub noreply email; redaction checklist before every commit | Partly process-only; no automated redaction check yet (gap) |
 
 ## Known future trust boundaries (to model when the phase starts)
@@ -49,6 +50,5 @@ Last updated: Phase 0 (2026-10-31).
 ## Gaps
 1. pip dependencies are pinned by version but not by hash (`--require-hashes`).
 2. No automated redaction check for screenshots/exports.
-3. Branch protection (required status checks) not yet configured on `main`.
-4. The `.env` ignore rules are not yet verified with
+3. The `.env` ignore rules are not yet verified with
    `git check-ignore -v .env .env.local .env.example`.

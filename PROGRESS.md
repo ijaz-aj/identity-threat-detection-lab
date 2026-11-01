@@ -1,6 +1,22 @@
 # Progress
 
-## Phase 0 — Environment, repo, skeleton (in progress)
+## Phase 1 — Telemetry and labelled attack data (in progress)
+
+### Session 2 — 2026-11-01
+- Verified on Microsoft Learn and recorded in `docs/references.md`: `SigninLogs` and `AuditLogs`
+  columns (`MfaDetail` is deprecated; neither table supports the Logs Ingestion API, so synthetic
+  data will need a custom table), sign-in error codes (0, 50126, 50053, 50057, 50074, 50076,
+  500121, 53003, 50140) and audit activity names for role, consent and app-credential changes.
+- Learned the identity attack chain: password spray → MFA fatigue → AiTM token theft → inbox rule →
+  OAuth consent → privilege escalation, and which table shows each step.
+- TRY (triage 9 synthetic sign-ins): identified the spray (6 users, 1 IP, 33 s, 50126), the
+  successful sign-in from the spray IP as the priority, the benign typo-then-success, and a
+  contain → investigate → remediate response.
+
+**Next:** Microsoft 365 (`OfficeActivity`, `CloudAppEvents`), `AzureActivity`, `AWSCloudTrail`,
+`SecurityEvent`; the AWS attack chain; then `data/schemas/`.
+
+## Phase 0 — Environment, repo, skeleton (complete)
 
 ### Session 1 — 2026-10-31
 **Environment**
@@ -32,5 +48,8 @@
 - [x] Control validation: a fake GitHub token was blocked at commit time (`RuleID: github-pat`,
       entropy 5.27, secret shown as REDACTED); test file removed afterwards.
 - [ ] Verify `.env` ignore rules with `git check-ignore -v .env .env.local .env.example`.
-- [ ] Branch protection on `main` with required checks `lint` + `secret-scan`.
-- [ ] First `LEARNING_LOG.md` entry.
+- [x] Ruleset `protect-main` (active, no bypass): PR required, required checks `lint (pre-commit)` and
+      `secret scan (gitleaks, full history)`, force pushes and deletion blocked. Validated: a direct
+      push to `main` was rejected (`GH013: Changes must be made through a pull request`); PR #1 merged
+      after both checks passed.
+- [x] First `LEARNING_LOG.md` entry.
