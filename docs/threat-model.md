@@ -30,7 +30,7 @@ Last updated: Phase 0 (2026-10-31).
 ## Abuse cases and controls
 | # | Abuse case | Controls | Status |
 |---|---|---|---|
-| A1 | Secret committed by mistake | `.gitignore` (tested with `git check-ignore`); gitleaks pre-commit hook on staged changes; gitleaks full-history scan in CI; `detect-private-key` hook | In place; a fake token was detected in a local scan; commit-time block still to be demonstrated |
+| A1 | Secret committed by mistake | `.gitignore` (tested with `git check-ignore`); gitleaks pre-commit hook on staged changes; gitleaks full-history scan in CI; `detect-private-key` hook | In place; proven: a fake GitHub token was blocked at commit time (`github-pat`, secret redacted) and CI scans the full history |
 | A2 | Malicious or hijacked upstream Action / hook / image | Actions and hooks pinned by full commit SHA, gitleaks image by digest, pip packages by exact version; ~14-day cooldown before adopting releases; Dependabot proposes updates through CI | In place (config); hash-pinned pip lockfile is a gap |
 | A3 | Pull request from a fork tries to steal secrets via CI | Workflow token is `contents: read`; `persist-credentials: false`; no repository secrets exist; no `pull_request_target` trigger | In place (config) |
 | A4 | Unredacted evidence or personal data published | Raw evidence folders git-ignored; commits use a GitHub noreply email; redaction checklist before every commit | Partly process-only; no automated redaction check yet (gap) |
