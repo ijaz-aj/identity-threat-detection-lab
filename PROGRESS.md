@@ -29,7 +29,8 @@
   no leaks found". Run: https://github.com/ijaz-aj/identity-threat-detection-lab/actions/runs/41228769904
 
 **Open**
-- [ ] Control validation: prove gitleaks blocks a fake token at commit time.
+- [x] Control validation: a fake GitHub token was blocked at commit time (`RuleID: github-pat`,
+      entropy 5.27, secret shown as REDACTED); test file removed afterwards.
 - [ ] Verify `.env` ignore rules with `git check-ignore -v .env .env.local .env.example`.
 - [ ] Branch protection on `main` with required checks `lint` + `secret-scan`.
 - [ ] First `LEARNING_LOG.md` entry.
