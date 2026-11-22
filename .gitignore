@@ -84,6 +84,8 @@ htmlcov/
 # ---------------------------------------------------------------------------
 # Raw public-dataset archives (we commit a small extracted sample + provenance)
 data/datasets/_downloads/
+# Generated training data and its answer key: regenerate with data/training/generate.py
+data/training/out/
 # Kusto emulator persisted data, if we mount a folder
 kustodata/
 # Local LLM model files (several GB)

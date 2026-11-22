@@ -1,0 +1,38 @@
+# Local Kusto emulator: Microsoft's real Kusto (KQL) query engine in a Linux container.
+# I use it to run and unit-test detections with no cloud and no cost.
+# Facts and sources (image, EULA, port, no auth/HTTPS): docs/references.md
+#
+#   Start:   docker compose up -d
+#   Status:  docker compose ps
+#   Stop:    docker compose down      (data inside the container is discarded)
+
+services:
+  kusto:
+    # Pinned by digest to a weekly production build that was at least 14 days old when chosen.
+    # The tag is for humans; Docker pulls exactly the digest. `latest` is rebuilt almost daily.
+    image: mcr.microsoft.com/azuredataexplorer/kustainer-linux:2026.11.08.0849-2642-6b94e85-weeklyproduction@sha256:f0a008cb44b4f05ded27cdfcd2e689710da567a213b45a3d3f81a0778289fa64
+    container_name: kusto-emulator
+
+    environment:
+      # Accepts the Microsoft Software License Terms (https://aka.ms/adx.emulator.license).
+      ACCEPT_EULA: "Y"
+
+    ports:
+      # The emulator has no authentication and no HTTPS, so it listens on this PC only,
+      # never on 0.0.0.0 (all network interfaces), which would expose it to the local network.
+      - "127.0.0.1:8080:8080"
+
+    volumes:
+      # Generated synthetic training data, mounted read-only so the engine can ingest it.
+      - ./data/training/out:/kustodata/training:ro
+
+    # Resource limits: Microsoft recommends 4 GB RAM.
+    mem_limit: 4g
+    cpus: 2
+
+    # Hardening: no process in the container can gain extra privileges.
+    # Known gap: the image runs as root and needs a writable filesystem (see docs/threat-model.md).
+    security_opt:
+      - no-new-privileges:true
+
+    restart: "no"

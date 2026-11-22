@@ -100,3 +100,24 @@ includes the pool: the core is included, guests (extra data) and longer locker t
 90 days) cost extra. **Why:** a recent platform shift in Microsoft SecOps; I plan to test it on the E5
 trial tenant if it qualifies (verify-first, see `docs/architecture.md`). · Note the schema split:
 Sentinel's `SigninLogs` vs Defender's `EntraIdSignInEvents` for the same sign-ins.
+
+### Kusto emulator
+Microsoft's real Kusto (KQL) query engine, packaged as a Linux container that runs on my PC. ·
+A flight simulator with the real cockpit. **Why:** I write and test KQL and detections for free,
+offline, and later in CI. The same queries run unchanged in Sentinel. No authentication or HTTPS,
+so it listens on `127.0.0.1` only (proven in `docs/threat-model.md`).
+
+### Docker Compose (`docker-compose.yml`)
+A text file that describes how to run a container: image, settings, ports, limits. · A recipe card,
+so `docker compose up -d` gives everyone the exact same setup. **Why:** repeatable, reviewable in Git,
+and every security setting is visible in one place.
+
+### `scripts/kql.py`
+My small helper that sends KQL to the local emulator and prints a table. Standard library only, URL
+fixed to localhost. Usage: `.venv\Scripts\python scripts\kql.py --db training "SigninLogs | take 5"`.
+
+### KQL (Kusto Query Language)
+The query language of Microsoft Sentinel, Defender advanced hunting, Log Analytics and Azure Data
+Explorer. Reads left to right: `Table | where … | summarize … | project …`, each `|` passing results
+to the next step. · A conveyor belt of filtering and counting machines. **Why:** about 80% of a
+Sentinel analyst's investigation, hunting and detection work is KQL.
