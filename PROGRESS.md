@@ -22,7 +22,11 @@
   `MailItemsAccessed`. Still to practise: deciding on events with missing detail.
 - Plan change: added a verify-first, zero-cost **Microsoft ISOC** track (Phases 2, 5, 6). Trial
   eligibility and workspace billing are UNVERIFIED and listed in `docs/references.md`.
-- First Dependabot PRs opened (#3 setup-python, #4 + #5 ruff); review pending.
+- First Dependabot review: #3 (setup-python 7.1.0) and #8 + #9 (ruff 0.17.4, merged as a pair) approved
+  after verifying each pinned SHA against the official tag, reading release notes (no breaking
+  changes; ruff's new security rule is preview-only), and checking the 14-day cooldown. Dependabot had
+  superseded #4–#7 itself. Note: ruff's green CI exercised nothing yet (0 Python files).
+  Two `main` CI runs showed "cancelled" by design (`cancel-in-progress`); the final run was green.
 
 **Next:** `AzureActivity`, `AWSCloudTrail`, `SecurityEvent`; the AWS attack chain; then `data/schemas/`.
 
