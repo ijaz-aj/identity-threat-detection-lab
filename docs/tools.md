@@ -90,3 +90,13 @@ GitHub's automation service: on every push, a fresh machine (runner) runs our ch
 ### Dependabot
 GitHub bot that opens pull requests when a pinned dependency has an update or a known vulnerability.
 **Why:** pins stay current without trusting "latest"; each update must still pass CI.
+
+## Phase 1 — telemetry
+
+### Microsoft ISOC (Integrated Security Operations Center)
+Sentinel's SIEM features (case management, workbooks, automation, playbooks) built into the Microsoft
+Defender portal as a benefit of Microsoft 365 E5 / E7 / Defender Suite. · A gym membership that now
+includes the pool: the core is included, guests (extra data) and longer locker time (retention beyond
+90 days) cost extra. **Why:** a recent platform shift in Microsoft SecOps; I plan to test it on the E5
+trial tenant if it qualifies (verify-first, see `docs/architecture.md`). · Note the schema split:
+Sentinel's `SigninLogs` vs Defender's `EntraIdSignInEvents` for the same sign-ins.
