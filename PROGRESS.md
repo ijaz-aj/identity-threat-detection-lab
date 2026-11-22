@@ -13,8 +13,18 @@
   successful sign-in from the spray IP as the priority, the benign typo-then-success, and a
   contain → investigate → remediate response.
 
-**Next:** Microsoft 365 (`OfficeActivity`, `CloudAppEvents`), `AzureActivity`, `AWSCloudTrail`,
-`SecurityEvent`; the AWS attack chain; then `data/schemas/`.
+### Session 3 — 2026-11-07 and 2026-11-22
+- Verified and recorded Microsoft 365 sources: `OfficeActivity` columns, `CloudAppEvents` (needs
+  Defender for Cloud Apps), Exchange audit operations (`New-InboxRule`, `Set-InboxRule`,
+  `UpdateInboxRules`, `MailItemsAccessed`, …) and `New-InboxRule` parameters.
+- TRY (triage 5 synthetic mailbox events): identified mail access + hiding rule + external forward
+  from the spray IP (pivot on `ClientIP`), a benign newsletter rule, and the business impact of
+  `MailItemsAccessed`. Still to practise: deciding on events with missing detail.
+- Plan change: added a verify-first, zero-cost **Microsoft ISOC** track (Phases 2, 5, 6). Trial
+  eligibility and workspace billing are UNVERIFIED and listed in `docs/references.md`.
+- First Dependabot PRs opened (#3 setup-python, #4 + #5 ruff); review pending.
+
+**Next:** `AzureActivity`, `AWSCloudTrail`, `SecurityEvent`; the AWS attack chain; then `data/schemas/`.
 
 ## Phase 0 — Environment, repo, skeleton (complete)
 
