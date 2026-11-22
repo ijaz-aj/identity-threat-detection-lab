@@ -13,7 +13,7 @@ Anything that could not be verified is marked **UNVERIFIED**.
 | Ollama binds 127.0.0.1:11434 by default; `OLLAMA_HOST` overrides it | [Ollama FAQ](https://docs.ollama.com/faq) | 2026-10-31 |
 | Dependabot `package-ecosystem` values `github-actions`, `pip`, `pre-commit`; `cooldown` / `default-days` option | [GitHub Docs: Dependabot options reference](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference) | 2026-10-31 |
 | gitleaks pre-commit hook `gitleaks` runs `gitleaks git --pre-commit --redact --staged --verbose` (staged changes only) | [gitleaks v8.30.1 `.pre-commit-hooks.yaml`](https://github.com/gitleaks/gitleaks/blob/v8.30.1/.pre-commit-hooks.yaml) | 2026-10-31 |
-| ruff-pre-commit v0.17.1 hook ids `ruff-check`, `ruff-format` | [ruff-pre-commit `.pre-commit-hooks.yaml`](https://github.com/astral-sh/ruff-pre-commit/blob/v0.17.1/.pre-commit-hooks.yaml) | 2026-10-31 |
+| ruff-pre-commit hook ids `ruff-check`, `ruff-format` (read at v0.17.1; still valid at v0.17.4, proven by a passing `pre-commit run --all-files`) | [ruff-pre-commit `.pre-commit-hooks.yaml`](https://github.com/astral-sh/ruff-pre-commit/blob/v0.17.1/.pre-commit-hooks.yaml) | 2026-10-31, re-checked 2026-11-22 |
 | `.gitignore`: `#` starts a comment only at the beginning of a line; `!` negates; last matching pattern wins | [git-scm: gitignore](https://git-scm.com/docs/gitignore) | 2026-10-31 (also proven locally with `git check-ignore`) |
 
 ## Log schemas and event names (Phase 1)
@@ -53,13 +53,18 @@ Anything that could not be verified is marked **UNVERIFIED**.
 |---|---|---|
 | Docker Desktop on Windows crashes on start when stale AF_UNIX socket files (`dockerInference`, `docker-secrets-engine\engine.sock`) can't be removed (error 1920); renaming the parent folder works | [docker/desktop-feedback #460](https://github.com/docker/desktop-feedback/issues/460), [#531](https://github.com/docker/desktop-feedback/issues/531), [#554](https://github.com/docker/desktop-feedback/issues/554), [#786](https://github.com/docker/desktop-feedback/issues/786) | 2026-10-31 |
 
-## Pinned versions (Phase 0)
-| Component | Version | Pinned as | Published |
-|---|---|---|---|
-| actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | 2026-07-20 |
-| actions/setup-python | v7.0.0 | `5fda3b95a4ea91299a34e894583c3862153e4b97` | 2026-07-20 |
-| pre-commit/pre-commit-hooks | v6.0.0 | `3e8a8703264a2f4a69428a0aa4dcb512790b2c8c` | 2025-08-09 |
-| astral-sh/ruff-pre-commit | v0.17.1 | `38bfb07c0c64c304f47eb52090f8288150c77730` | 2026-10-15 |
+## Pinned versions
+Updated whenever a Dependabot PR is merged. Before merging, each update is reviewed: the pinned SHA
+is checked against the official tag (`gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`), the
+release notes are read for breaking/security changes, the 14-day cooldown is respected, and CI must pass.
+
+| Component | Version | Pinned as | Published | Updated via |
+|---|---|---|---|---|
+| actions/checkout | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` | 2026-07-20 | initial |
+| actions/setup-python | v7.1.0 | `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0` | 2026-10-22 | PR #3 (SHA verified) |
+| pre-commit/pre-commit-hooks | v6.0.0 | `3e8a8703264a2f4a69428a0aa4dcb512790b2c8c` | 2025-08-09 | initial |
+| astral-sh/ruff-pre-commit | v0.17.4 | `c0f278f1254ccc8fb09676bcdb8d847e7db493e5` | 2026-11-05 | PR #8 (SHA verified) |
+| ruff (pip) | 0.17.4 | `requirements-dev.txt` | 2026-11-05 | PR #9 (paired with #8) |
 | adrienverge/yamllint | v1.38.0 | `cba56bcde1fdd01c1deb3f945e69764c291a6530` | 2026-01-13 |
 | gitleaks | v8.30.1 | hook `83d9cd684c87d95d656c1458ef04895a7f1cbd8e`; image `sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f` | 2026-03-21 |
 | pre-commit (pip) | 4.7.0 | `requirements-dev.txt` | 2026-10-13 |
