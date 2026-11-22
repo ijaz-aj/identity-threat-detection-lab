@@ -1,0 +1,35 @@
+// Loads the SYNTHETIC training week (data/training/out/*.csv) into the emulator's "training" database.
+// Steps:  1) .venv\Scripts\python data\training\generate.py
+//         2) docker compose up -d   (mounts data/training/out read-only at /kustodata/training)
+//         3) .venv\Scripts\python scripts\kql.py --db training --file data\training\load.kql
+// Column names and types follow the real table schemas (docs/references.md); this is a subset.
+
+.create database training persist (@"/kustodata/dbs/training/md", @"/kustodata/dbs/training/data") ifnotexists
+
+.drop tables (SigninLogs, AuditLogs, OfficeActivity, AWSCloudTrail, SecurityEvent, AzureActivity) ifexists
+
+.create table SigninLogs (TimeGenerated: datetime, UserPrincipalName: string, UserDisplayName: string, IPAddress: string, Location: string, LocationDetails: dynamic, AutonomousSystemNumber: string, AppDisplayName: string, ClientAppUsed: string, UserAgent: string, DeviceDetail: dynamic, ResultType: string, ResultDescription: string, IsInteractive: bool, AuthenticationProtocol: string, ConditionalAccessStatus: string, RiskLevelDuringSignIn: string, SessionId: string, UniqueTokenIdentifier: string, CorrelationId: string)
+
+.create table AuditLogs (TimeGenerated: datetime, OperationName: string, ActivityDisplayName: string, Category: string, Result: string, ResultReason: string, InitiatedBy: dynamic, TargetResources: dynamic, AdditionalDetails: dynamic, LoggedByService: string, CorrelationId: string)
+
+.create table OfficeActivity (TimeGenerated: datetime, Operation: string, OfficeWorkload: string, UserId: string, MailboxOwnerUPN: string, ClientIP: string, Parameters: string, ResultStatus: string, ExternalAccess: string, AppId: string)
+
+.create table AWSCloudTrail (TimeGenerated: datetime, EventName: string, EventSource: string, EventTypeName: string, AWSRegion: string, SourceIpAddress: string, UserAgent: string, UserIdentityType: string, UserIdentityUserName: string, UserIdentityArn: string, UserIdentityAccessKeyId: string, UserIdentityAccountId: string, SessionMfaAuthenticated: bool, ErrorCode: string, ErrorMessage: string, RequestParameters: string, ResponseElements: string, AdditionalEventData: string, ReadOnly: bool, ManagementEvent: bool, RecipientAccountId: string)
+
+.create table SecurityEvent (TimeGenerated: datetime, Computer: string, EventID: int, Activity: string, Account: string, AccountType: string, LogonType: int, LogonTypeName: string, IpAddress: string, WorkstationName: string, TargetUserName: string, SubjectUserName: string, NewProcessName: string, ParentProcessName: string, CommandLine: string, MemberName: string)
+
+.create table AzureActivity (TimeGenerated: datetime, OperationNameValue: string, ActivityStatusValue: string, Caller: string, CallerIpAddress: string, CategoryValue: string, ResourceGroup: string, ResourceProviderValue: string, SubscriptionId: string, Properties_d: dynamic, Level: string)
+
+.ingest into table SigninLogs (@"/kustodata/training/SigninLogs.csv") with (format="csv", ignoreFirstRecord=true)
+
+.ingest into table AuditLogs (@"/kustodata/training/AuditLogs.csv") with (format="csv", ignoreFirstRecord=true)
+
+.ingest into table OfficeActivity (@"/kustodata/training/OfficeActivity.csv") with (format="csv", ignoreFirstRecord=true)
+
+.ingest into table AWSCloudTrail (@"/kustodata/training/AWSCloudTrail.csv") with (format="csv", ignoreFirstRecord=true)
+
+.ingest into table SecurityEvent (@"/kustodata/training/SecurityEvent.csv") with (format="csv", ignoreFirstRecord=true)
+
+.ingest into table AzureActivity (@"/kustodata/training/AzureActivity.csv") with (format="csv", ignoreFirstRecord=true)
+
+union withsource=Table SigninLogs, AuditLogs, OfficeActivity, AWSCloudTrail, SecurityEvent, AzureActivity | summarize Rows = count() by Table | order by Table asc

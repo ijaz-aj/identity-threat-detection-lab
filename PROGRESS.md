@@ -28,7 +28,21 @@
   superseded #4–#7 itself. Note: ruff's green CI exercised nothing yet (0 Python files).
   Two `main` CI runs showed "cancelled" by design (`cancel-in-progress`); the final run was green.
 
-**Next:** `AzureActivity`, `AWSCloudTrail`, `SecurityEvent`; the AWS attack chain; then `data/schemas/`.
+### Session 4 — 2026-11-22
+- Verified `AWSCloudTrail`, `AzureActivity`, `SecurityEvent` schemas, CloudTrail/IAM/S3 event names,
+  console sign-in fields and Windows event IDs (`docs/references.md`). Findings that matter later:
+  S3 object-level data events are off by default and cost extra; `AWSCloudTrail` supports the
+  Logs Ingestion API.
+- **Kusto emulator running locally** (`docker-compose.yml`): pinned by digest to a ≥14-day-old
+  weekly production build; port bound to `127.0.0.1` and proven unreachable from Wi-Fi, VirtualBox
+  and WSL addresses; 4 GB / 2 CPU limits; `no-new-privileges`. Gap: runs as root.
+- `scripts/kql.py` helper; `data/samples/password_spray_mini.kql` (9 rows from the first TRY).
+- **KQL training week** (`data/training/`): 6 tables, 2,271 synthetic rows, 19 hidden scenarios in
+  three tiers plus benign look-alikes; sanity-checked (the spray IP stands out with 16 users;
+  14 benign typo failures exist as noise).
+- Decision: pause the project build to take an 8-module KQL course on this data first.
+
+**Next:** KQL Module 1 exercises → Module 2 (aggregation and time windows) on the training week.
 
 ## Phase 0 — Environment, repo, skeleton (complete)
 
